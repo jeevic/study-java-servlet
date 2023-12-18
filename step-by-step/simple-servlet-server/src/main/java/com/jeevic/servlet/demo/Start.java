@@ -14,6 +14,7 @@ public class Start {
         try (HttpConnector connector = new HttpConnector()) {
             for (;;) {
                 try {
+                    System.out.println("this is a println");
                     Thread.sleep(1000);
                 } catch (InterruptedException e) {
                     break;

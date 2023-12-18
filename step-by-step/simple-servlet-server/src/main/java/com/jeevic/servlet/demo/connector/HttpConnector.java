@@ -1,12 +1,18 @@
 package com.jeevic.servlet.demo.connector;
 
+import com.jeevic.servlet.demo.engine.HttpServletRequestImpl;
+import com.jeevic.servlet.demo.engine.HttpServletResponseImpl;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.net.InetSocketAddress;
 
 /**
@@ -35,7 +41,25 @@ public class HttpConnector implements HttpHandler, AutoCloseable {
     public void handle(HttpExchange exchange) throws IOException {
         logger.info("{}: {}?{}", exchange.getRequestMethod(), exchange.getRequestURI().getPath(), exchange.getRequestURI().getRawQuery());
 
+        var adapter = new HttpExchangeAdapter(exchange);
+        var request = new HttpServletRequestImpl(adapter);
+        var response = new HttpServletResponseImpl(adapter);
 
+        // process:
+        try {
+            process(request, response);
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+        }
+    }
+
+    void process(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        String name = request.getParameter("name");
+        String html = "<h1>Hello, " + (name == null ? "world" : name) + ".</h1>";
+        response.setContentType("text/html");
+        PrintWriter pw = response.getWriter();
+        pw.write(html);
+        pw.close();
     }
 
     @Override
