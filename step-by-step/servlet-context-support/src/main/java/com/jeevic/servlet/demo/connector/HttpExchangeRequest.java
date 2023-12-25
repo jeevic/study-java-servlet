@@ -1,5 +1,9 @@
 package com.jeevic.servlet.demo.connector;
 
+import com.sun.net.httpserver.Headers;
+
+import java.io.IOException;
+import java.net.InetSocketAddress;
 import java.net.URI;
 
 /**
@@ -16,9 +20,13 @@ public interface HttpExchangeRequest {
      */
     String getRequestMethod();
 
-    /**
-     * 获取请求method
-     * @return
-     */
     URI getRequestURI();
+
+    Headers getRequestHeaders();
+
+    InetSocketAddress getRemoteAddress();
+
+    InetSocketAddress getLocalAddress();
+
+    byte[] getRequestBody() throws IOException;
 }
